@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#151515">
+<title>Solo — Places to Go</title>
+<style>
+:root {
+  --bg:#f4f1eb; --card:#fffdf9; --text:#171717; --muted:#77736c;
+  --line:#ded9d0; --dark:#171717;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.hero{max-width:1100px;margin:auto;padding:52px 20px 28px}
+.eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+h1{font-family:Georgia,serif;font-weight:500;font-size:clamp(52px,10vw,92px);line-height:.85;margin:0 0 17px}
+.hero p{max-width:620px;color:var(--muted);line-height:1.65;margin:0}
+.wrap{max-width:1100px;margin:auto;padding:0 20px 70px}
+.toolbar{position:sticky;top:0;z-index:20;background:rgba(244,241,235,.94);
+backdrop-filter:blur(14px);padding:14px 0 12px}
+.search{width:100%;border:1px solid var(--line);background:var(--card);border-radius:14px;
+padding:14px 16px;font-size:15px;outline:none}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding-top:10px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:1px solid var(--line);background:var(--card);color:var(--text);
+border-radius:999px;padding:9px 15px;white-space:nowrap;cursor:pointer;font-size:13px}
+.tab.active{background:var(--dark);color:white;border-color:var(--dark)}
+.meta{display:flex;justify-content:space-between;align-items:center;margin:20px 0 13px;color:var(--muted);font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;
+min-height:190px;display:flex;flex-direction:column;box-shadow:0 4px 16px rgba(0,0,0,.025)}
+.badge{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+.name{font-family:Georgia,serif;font-size:23px;line-height:1.12;margin-bottom:10px}
+.info{font-size:13px;color:var(--muted);line-height:1.5;flex:1}
+.map{display:block;text-align:center;text-decoration:none;background:var(--dark);color:#fff;
+border-radius:11px;padding:11px;margin-top:17px;font-size:13px;font-weight:600}
+.map.off{background:#ebe7df;color:#aaa;pointer-events:none}
+.empty{padding:60px 10px;text-align:center;color:var(--muted)}
+footer{max-width:1100px;margin:auto;padding:0 20px 35px;text-align:center;color:#aaa;font-size:11px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.hero{padding-top:36px}.grid{grid-template-columns:1fr 1fr;gap:9px}.card{padding:14px;min-height:180px;border-radius:15px}.name{font-size:20px}}
+@media(max-width:360px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow">Trip guide · November</div>
+  <h1>Solo in November</h1>
+  <p>A personal list of places to eat, hang out and explore — all in one little guide (little maria)</p>
+</header>
+
+<main class="wrap">
+  <div class="toolbar">
+    <input id="search" class="search" type="search" placeholder="Search a place..." autocomplete="off">
+    <div id="tabs" class="tabs"></div>
+  </div>
+
+  <div class="meta">
+    <span id="count"></span>
+    <span>📍 Solo</span>
+  </div>
+
+  <section id="grid" class="grid"></section>
+  <div id="empty" class="empty" hidden>Nothing found.</div>
+</main>
+
+<footer>Solo · Places to Go</footer>
+
+<script>
+const places = [{"name": "Selat Viens", "category": "FOOD", "maps": "https://maps.app.goo.gl/6psWsHugenCtPYBC9", "info": "Makan Berat"}, {"name": "TFP", "category": "FOOD", "maps": "https://maps.app.goo.gl/BcZiYLLKKbR8uV6A8", "info": "Breakfast (Western)"}, {"name": "Bu Parmi Nasi Liwet", "category": "FOOD", "maps": "https://maps.app.goo.gl/3iqawAJcDzWbZLu57", "info": "Makan Berat"}, {"name": "Soto Kwali Pak Sarwono", "category": "FOOD", "maps": "https://maps.app.goo.gl/H6e24wxvULMFCGbg8", "info": "Makan Berat"}, {"name": "Babi Kuah Pak No", "category": "FOOD", "maps": "https://maps.app.goo.gl/BB3wBsD5DSeLYKKn6", "info": "Makan Berat"}, {"name": "Babi Kuah Mbak Mun", "category": "FOOD", "maps": "https://maps.app.goo.gl/zz9mGKWbwLxutBKE7", "info": "Makan Berat"}, {"name": "Es Dawet Bu Dermi", "category": "FOOD", "maps": "https://maps.app.goo.gl/A7AR7vtrf1SEZmUT7", "info": "Dessert / Brekfast"}, {"name": "Babi Kuah Pak Jum", "category": "FOOD", "maps": "https://maps.app.goo.gl/1icXQ4kN6tWXtgZ38", "info": "Makan Berat"}, {"name": "Mie Sumatera", "category": "FOOD", "maps": "https://maps.app.goo.gl/vghEPc6F74EpeFzX7", "info": "Makan Berat"}, {"name": "Selat Tenda Biru", "category": "FOOD", "maps": "https://maps.app.goo.gl/vmqxVbD1jsnbG9jn8", "info": "Makan Berat"}, {"name": "Nasi Liwet Bu Sri", "category": "FOOD", "maps": "https://maps.app.goo.gl/jEQ9cn72mhJtDFGU8", "info": "Makan Berat / Breakfast"}, {"name": "Warung Resep Ibu", "category": "FOOD", "maps": "https://maps.app.goo.gl/dgeeAjzBNJvezzGv5", "info": "Makan Berat"}, {"name": "Little Hanoi", "category": "FOOD", "maps": "https://maps.app.goo.gl/K6GpQ8VjA8SCwMjGA", "info": "Makan Berat (Vietnam)"}, {"name": "Namu Cafe", "category": "FOOD", "maps": "https://maps.app.goo.gl/mfy9eq2avKEp9wYX9", "info": "Makan Berat (Korean)"}, {"name": "Penyetan Bang Adel", "category": "FOOD", "maps": "https://maps.app.goo.gl/XZ2ZXiEe1ob5kFuCA", "info": "Makan Berat"}, {"name": "Cold n Brew", "category": "NONGS", "maps": "https://maps.app.goo.gl/SVbu5uxL79xqnwYA7", "info": "Cafe"}, {"name": "Eskrim Tentrem", "category": "NONGS", "maps": "https://maps.app.goo.gl/i2bfSE2UzzdHtuSZA", "info": "Eskrim"}, {"name": "Stieti Coffee", "category": "NONGS", "maps": "https://maps.app.goo.gl/igHsjaGLLr5WDxQ48", "info": "Cafe"}, {"name": "Swargi", "category": "NONGS", "maps": "https://maps.app.goo.gl/vY7sQAreuBBSDX8A8", "info": "Cafe"}, {"name": "Toko Roti Aren", "category": "NONGS", "maps": "https://maps.app.goo.gl/t51ZR648bKtt4RZ1A", "info": "Dessert"}, {"name": "Whitedesk Coffee", "category": "NONGS", "maps": "https://maps.app.goo.gl/ixvrcgyjthoApJsf8", "info": "Cafe"}, {"name": "Toko Kopi Pak Agus", "category": "NONGS", "maps": "https://maps.app.goo.gl/oPhDq1h8CFmUtH11A", "info": "Cafe"}, {"name": "Whynot Coffee", "category": "NONGS", "maps": "https://maps.app.goo.gl/m5RF3sVzGQdVgAw49", "info": "Cafe"}, {"name": "Milk Butter", "category": "NONGS", "maps": "https://maps.app.goo.gl/kWYz5RL9fYMfjJYB9", "info": "Dessert"}, {"name": "Dapoerbarru", "category": "NONGS", "maps": "https://maps.app.goo.gl/SG2TeAWKDSw26kMAA", "info": "Dessert"}, {"name": "Es Puter Pak Sis", "category": "NONGS", "maps": "https://maps.app.goo.gl/ozd7gCFySZoBsJqz7", "info": "Dessert"}, {"name": "Rasa Madu Heritage", "category": "Places", "maps": "https://maps.app.goo.gl/TW2hHRZStXXejmxM9", "info": ""}, {"name": "Wayang Wong Sriwedari", "category": "Places", "maps": "https://maps.app.goo.gl/thDK8a3FZnocKovP6", "info": ""}, {"name": "Kampung Batik Laweyan", "category": "Places", "maps": "https://maps.app.goo.gl/tC6bjXdPaDwWgpkGA", "info": ""}, {"name": "Lokanata", "category": "Places", "maps": "https://maps.app.goo.gl/K1Uz8QgmfqAqxUYbA", "info": ""}, {"name": "Kampung Batik Kauman", "category": "Places", "maps": "https://maps.app.goo.gl/kd9Teyk7kbT7bNdU9", "info": ""}];
+
+let active = "ALL";
+const search = document.getElementById("search");
+const tabs = document.getElementById("tabs");
+const grid = document.getElementById("grid");
+const count = document.getElementById("count");
+const empty = document.getElementById("empty");
+
+const categories = ["ALL", ...new Set(places.map(p => p.category).filter(Boolean))];
+
+function safe(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+}
+
+function renderTabs() {
+  tabs.innerHTML = categories.map(c => `
+    <button class="tab ${active === c ? "active" : ""}" onclick="choose('${safe(c)}')">
+      ${c === "ALL" ? "All" : safe(c)}
+    </button>
+  `).join("");
+}
+
+function choose(c) {
+  active = c;
+  renderTabs();
+  render();
+}
+
+function render() {
+  const q = search.value.trim().toLowerCase();
+
+  const list = places.filter(p => {
+    const categoryMatch = active === "ALL" || p.category === active;
+    const text = `${p.name} ${p.info} ${p.category}`.toLowerCase();
+    return categoryMatch && text.includes(q);
+  });
+
+  count.textContent = `${list.length} place${list.length === 1 ? "" : "s"}`;
+  empty.hidden = list.length > 0;
+
+  grid.innerHTML = list.map(p => `
+    <article class="card">
+      <div class="badge">${safe(p.category)}</div>
+      <div class="name">${safe(p.name)}</div>
+      <div class="info">${safe(p.info || "—")}</div>
+      <a class="map ${p.maps ? "" : "off"}" 
+         ${p.maps ? `href="${safe(p.maps)}" target="_blank" rel="noopener"` : ""}>
+        📍 Open in Maps
+      </a>
+    </article>
+  `).join("");
+}
+
+search.addEventListener("input", render);
+renderTabs();
+render();
+</script>
+</body>
+</html>
